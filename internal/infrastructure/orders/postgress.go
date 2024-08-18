@@ -49,5 +49,5 @@ func (r *PostgressRepo) GetOrder(ctx context.Context, number int) (*order.Order,
 		return nil, err
 	}
 
-	return order.NewOrder(u.ID, u.Username, u.Password), nil
+	return order.NewOrder(), nil
 }

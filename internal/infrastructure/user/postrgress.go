@@ -11,12 +11,7 @@ type PostgressRepo struct {
 	db *pgxpool.Pool
 }
 
-func NewPostgressRepo(cs string) (*PostgressRepo, error) {
-	pool, err := pgxpool.New(context.Background(), cs)
-	if err != nil {
-		return nil, err
-	}
-
+func NewPostgressRepo(pool *pgxpool.Pool) (*PostgressRepo, error) {
 	if _, err := pool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS users (
 		"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 		"username" VARCHAR(250) NOT NULL UNIQUE,

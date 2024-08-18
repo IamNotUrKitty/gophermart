@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Setup(e *echo.Echo, repo handlers.Repository) {
+func Setup(e *echo.Echo, repo handlers.UserRepository) {
 	handler := handlers.NewHandler("test", repo)
 
 	e.POST("/api/user/register", handler.Register)
