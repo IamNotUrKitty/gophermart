@@ -3,22 +3,28 @@ package handlers
 import (
 	"context"
 
+	"github.com/IamNotUrKitty/gophermart/internal/domain/order"
 	"github.com/IamNotUrKitty/gophermart/internal/domain/user"
 )
 
-type Repository interface {
+type UserRepository interface {
 	GetUser(ctx context.Context, userID string) (*user.User, error)
 	SaveUser(ctx context.Context, u user.User) error
 }
 
-type Handler struct {
-	address string
-	repo    Repository
+type OrderRepository interface {
+	SaveOrder(ctx context.Context, o order.Order) error
+	GetOrdersByUserId(ctx context.Context, userID string) ([]*order.Order, error)
 }
 
-func NewHandler(address string, repo Repository) *Handler {
+type Handler struct {
+	address  string
+	userRepo UserRepository
+}
+
+func NewHandler(address string, repo UserRepository) *Handler {
 	return &Handler{
-		address: address,
-		repo:    repo,
+		address:  address,
+		userRepo: repo,
 	}
 }

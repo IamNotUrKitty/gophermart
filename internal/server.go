@@ -12,7 +12,7 @@ func NewServer() (*echo.Echo, error) {
 
 	e := echo.New()
 
-	userRepo, err := userInfra.NewPostgressRepo("postgres://postgres:postgres@localhost:5432/gophermart?sslmode=disable")
+	userRepo, err := userInfra.NewPostgressRepo("postgres://postgres:123@localhost:5432/gophermart?sslmode=disable")
 	if err != nil {
 		return nil, err
 	}
