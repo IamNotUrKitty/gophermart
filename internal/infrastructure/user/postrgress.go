@@ -12,20 +12,13 @@ type PostgressRepo struct {
 }
 
 func NewPostgressRepo(pool *pgxpool.Pool) (*PostgressRepo, error) {
-	if _, err := pool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS users (
-		"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-		"username" VARCHAR(250) NOT NULL UNIQUE,
-		"password" VARCHAR(250))`); err != nil {
-		return nil, err
-	}
-
 	return &PostgressRepo{
 		db: pool,
 	}, nil
 }
 
 func (r *PostgressRepo) SaveUser(ctx context.Context, u user.User) error {
-	_, err := r.db.Exec(ctx, "INSERT INTO users (username, password) VALUES ($1, $2)", u.Username(), u.PasswordHash())
+	_, err := r.db.Exec(ctx, "INSERT INTO users (id, username, #assword) VALUES ($1, $2, $3)", u.ID(), u.Username(), u.PasswordHash())
 	if err != nil {
 		return err
 	}
@@ -34,7 +27,7 @@ func (r *PostgressRepo) SaveUser(ctx context.Context, u user.User) error {
 }
 
 func (r *PostgressRepo) GetUser(ctx context.Context, username string) (*user.User, error) {
-	userRow := r.db.QueryRow(ctx, "SELECT id, username, password FROM users where username=$1", username)
+	userRow := r.db.QueryRow(ctx, "SELECT id, username, password FROM users where username=$1")
 
 	var u user.StoredUser
 

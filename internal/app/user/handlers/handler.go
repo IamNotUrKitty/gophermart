@@ -5,6 +5,7 @@ import (
 
 	"github.com/IamNotUrKitty/gophermart/internal/domain/order"
 	"github.com/IamNotUrKitty/gophermart/internal/domain/user"
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
@@ -13,18 +14,20 @@ type UserRepository interface {
 }
 
 type OrderRepository interface {
-	SaveOrder(ctx context.Context, o order.Order) error
-	GetOrdersByUserId(ctx context.Context, userID string) ([]*order.Order, error)
+	SaveOrder(ctx context.Context, o *order.Order, userID uuid.UUID) error
+	GetOrdersByUserID(ctx context.Context, userID uuid.UUID) (*[]order.Order, error)
 }
 
 type Handler struct {
-	address  string
-	userRepo UserRepository
+	address   string
+	userRepo  UserRepository
+	orderRepo OrderRepository
 }
 
-func NewHandler(address string, repo UserRepository) *Handler {
+func NewHandler(address string, userRepo UserRepository, orderRepo OrderRepository) *Handler {
 	return &Handler{
-		address:  address,
-		userRepo: repo,
+		address:   address,
+		userRepo:  userRepo,
+		orderRepo: orderRepo,
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/IamNotUrKitty/gophermart/internal/domain/order"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -11,43 +13,43 @@ type PostgressRepo struct {
 	db *pgxpool.Pool
 }
 
-func NewPostgressRepo(cs string) (*PostgressRepo, error) {
-	pool, err := pgxpool.New(context.Background(), cs)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := pool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS orders (
-		"number" bigint NOT NULL PRIMARY KEY,
-		"status" status,
-		"user_id" uuid REFERENCES users (id),
-		"accrual" int,
-		"uploaded_at" timestamp without time zone DEFAULT CURRENT_TIMESTAMP)`); err != nil {
-		return nil, err
-	}
-
+func NewPostgressRepo(pool *pgxpool.Pool) (*PostgressRepo, error) {
 	return &PostgressRepo{
 		db: pool,
 	}, nil
 }
 
-func (r *PostgressRepo) SaveOrder(ctx context.Context, o order.Order) error {
-	_, err := r.db.Exec(ctx, "INSERT INTO orders (number, status, user_id, accrual) VALUES ($1, $2, $3)", o.Number(), o.Status(), o.UserID(), o.Accrual())
+func (r *PostgressRepo) SaveOrder(ctx context.Context, o *order.Order, userID uuid.UUID) error {
+	_, err := r.db.Exec(ctx, "INSERT INTO orders (number, user_id) VALUES ($1, $2)", o.Number, userID)
 	if err != nil {
 		return err
 	}
 
-	return err
+	return nil
 }
 
-func (r *PostgressRepo) GetOrder(ctx context.Context, number int) (*order.Order, error) {
+func (r *PostgressRepo) GetOrder(ctx context.Context, number string) (*order.Order, error) {
 	userRow := r.db.QueryRow(ctx, "SELECT number, status, user_id, accrual, uploaded_at FROM orders where number=$1", number)
 
-	var o order.StoredOrder
+	var o order.Order
 
 	if err := userRow.Scan(&o.Number, &o.Status, &o.Accrual, &o.UploadedAt); err != nil {
 		return nil, err
 	}
 
-	return order.NewOrder(), nil
+	return order.NewOrder(o.Number), nil
+}
+
+func (r *PostgressRepo) GetOrdersByUserID(ctx context.Context, userID uuid.UUID) (*[]order.Order, error) {
+	rows, err := r.db.Query(ctx, "SELECT number, status, accrual, uploaded_at FROM orders where user_id=$1", userID)
+	if err != nil {
+		return nil, err
+	}
+
+	orders, err := pgx.CollectRows(rows, pgx.RowToStructByName[order.Order])
+	if err != nil {
+		return nil, err
+	}
+
+	return &orders, nil
 }

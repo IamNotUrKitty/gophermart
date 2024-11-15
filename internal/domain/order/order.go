@@ -1,6 +1,6 @@
 package order
 
-import "github.com/google/uuid"
+import "time"
 
 type Status string
 
@@ -9,49 +9,21 @@ const (
 	PROCESSING Status = "PROCESSING"
 	INVALID    Status = "INVALID"
 	PROCESSED  Status = "PROCESSED"
-	REGISTERED Status = "REGISTERED"
 )
 
 type Order struct {
-	number     int
-	status     Status
-	userID     uuid.UUID
-	accrual    int
-	uploadedAt string
+	Number     string    `db:"number" json:"number"`
+	Status     Status    `db:"status" json:"status"`
+	Accrual    *float64  `db:"accrual" json:"accrual,omitempty"`
+	UploadedAt time.Time `db:"uploaded_at" json:"uploaded_at"`
 }
 
-type StoredOrder struct {
-	Number     int       `json:"number"`
-	Status     Status    `json:"status"`
-	UserID     uuid.UUID `json:"userId"`
-	Accrual    int       `json:"accrual"`
-	UploadedAt string    `json:"uploaded_at"`
+func NewOrder(number string) *Order {
+	return &Order{
+		Number: number,
+	}
 }
 
-func NewOrder() *Order {
-	return &Order{}
-}
-
-func CreateOrder() (*Order, error) {
-	return NewOrder(), nil
-}
-
-func (o *Order) Number() int {
-	return o.number
-}
-
-func (o *Order) Status() Status {
-	return o.status
-}
-
-func (o *Order) UserID() uuid.UUID {
-	return o.userID
-}
-
-func (o *Order) Accrual() int {
-	return o.accrual
-}
-
-func (o *Order) UploadedAt() string {
-	return o.uploadedAt
+func CreateOrder(number string) (*Order, error) {
+	return NewOrder(number), nil
 }

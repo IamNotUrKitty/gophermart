@@ -1,8 +1,8 @@
 package echomiddleware
 
 import (
-	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/IamNotUrKitty/gophermart/internal/domain/user"
@@ -22,7 +22,11 @@ const CookieName = "user"
 
 func InitJWTMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
-		ContinueOnIgnoredError: true,
+		Skipper: func(c echo.Context) bool {
+			path := c.Request().URL.Path
+
+			return strings.Contains(path, "login") || strings.Contains(path, "register")
+		},
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(CustomClaims)
 		},
@@ -32,19 +36,10 @@ func InitJWTMiddleware() echo.MiddlewareFunc {
 			claims := user.Claims.(*CustomClaims)
 
 			c.Set("userId", claims.UserID)
-
 		},
 		TokenLookup: "cookie:" + CookieName,
 		SigningKey:  []byte(Secret),
 	})
-}
-
-func GetUser(c echo.Context) (int, error) {
-	a := c.Get("userId").(int)
-	if a == 0 {
-		return 0, errors.New("отсутствует userId")
-	}
-	return a, nil
 }
 
 func GetUserToken(u *user.User) (*http.Cookie, error) {
