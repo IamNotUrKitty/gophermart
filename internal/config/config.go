@@ -57,8 +57,8 @@ func GetConfig() *Config {
 	flag.Func("a", "Адрес запуска HTTP-сервера", parseAddress(&cfg.Address, defaultAddress))
 	flag.Func("d", "Строка коннекта к БД", parseDBConnection(&cfg.DatabaseAddress, defaultDatabase))
 
-	cfg.Address = getEnv("SERVER_ADDRESS", defaultAddress)
-	cfg.DatabaseAddress = getEnv("DATABASE_DSN", defaultDatabase)
+	cfg.Address = getEnv("RUN_ADDRESS", defaultAddress)
+	cfg.DatabaseAddress = getEnv("DATABASE_URI", defaultDatabase)
 
 	flag.Parse()
 
