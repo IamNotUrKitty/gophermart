@@ -1,13 +1,17 @@
 package internal
 
+import "github.com/IamNotUrKitty/gophermart/internal/config"
+
 func Run() error {
 
-	server, err := NewServer()
+	config := config.GetConfig()
+
+	server, err := NewServer(config)
 	if err != nil {
 		return err
 	}
 
-	if err := server.Start("localhost:8080"); err != nil {
+	if err := server.Start(config.Address); err != nil {
 		return err
 	}
 

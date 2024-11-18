@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/IamNotUrKitty/gophermart/internal/app/user"
+	"github.com/IamNotUrKitty/gophermart/internal/config"
 	"github.com/IamNotUrKitty/gophermart/internal/db"
 	"github.com/IamNotUrKitty/gophermart/internal/echomiddleware"
 	"github.com/IamNotUrKitty/gophermart/internal/infrastructure/orders"
@@ -11,12 +12,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewServer() (*echo.Echo, error) {
+func NewServer(config *config.Config) (*echo.Echo, error) {
 	e := echo.New()
 
 	e.Use(echomiddleware.InitJWTMiddleware())
 
-	pool, err := db.NewConnectionPool("postgres://postgres:123@localhost:5432/gophermart?sslmode=disable")
+	pool, err := db.NewConnectionPool(config.DatabaseAddress)
 	if err != nil {
 		return nil, err
 	}

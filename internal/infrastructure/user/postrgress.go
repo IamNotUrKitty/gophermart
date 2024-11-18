@@ -18,7 +18,7 @@ func NewPostgressRepo(pool *pgxpool.Pool) (*PostgressRepo, error) {
 }
 
 func (r *PostgressRepo) SaveUser(ctx context.Context, u user.User) error {
-	_, err := r.db.Exec(ctx, "INSERT INTO users (id, username, #assword) VALUES ($1, $2, $3)", u.ID(), u.Username(), u.PasswordHash())
+	_, err := r.db.Exec(ctx, "INSERT INTO users (id, username, password) VALUES ($1, $2, $3)", u.ID(), u.Username(), u.PasswordHash())
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (r *PostgressRepo) SaveUser(ctx context.Context, u user.User) error {
 }
 
 func (r *PostgressRepo) GetUser(ctx context.Context, username string) (*user.User, error) {
-	userRow := r.db.QueryRow(ctx, "SELECT id, username, password FROM users where username=$1")
+	userRow := r.db.QueryRow(ctx, "SELECT id, username, password FROM users where username=$1", username)
 
 	var u user.StoredUser
 
