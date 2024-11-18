@@ -38,7 +38,7 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	if existedUser == nil {
-		return c.String(http.StatusUnauthorized, err.Error())
+		return c.String(http.StatusUnauthorized, "пользователя не существует")
 	}
 
 	if existedUser.PasswordHash() == u.PasswordHash() {
@@ -48,7 +48,7 @@ func (h *Handler) Login(c echo.Context) error {
 		}
 		c.SetCookie(cookie)
 	} else {
-		return c.String(http.StatusUnauthorized, errors.New("Неверная пара логин/пароль").Error())
+		return c.String(http.StatusUnauthorized, errors.New("неверный логин или пароль").Error())
 	}
 
 	return c.JSON(http.StatusOK, u)

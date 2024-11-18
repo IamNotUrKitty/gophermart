@@ -28,9 +28,9 @@ func (h *Handler) Register(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	existedUser, err := h.userRepo.GetUser(c.Request().Context(), userData.Login)
+	existedUser, _ := h.userRepo.GetUser(c.Request().Context(), userData.Login)
 	if existedUser != nil {
-		return c.String(http.StatusConflict, errors.New("Already exist").Error())
+		return c.String(http.StatusConflict, errors.New("already exist").Error())
 	}
 
 	u, err := user.CreateUser(userData.Login, userData.Password)
