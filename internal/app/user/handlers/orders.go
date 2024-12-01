@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -10,8 +9,6 @@ import (
 
 func (h *Handler) Orders(c echo.Context) error {
 	userID := c.Get("userId").(uuid.UUID)
-
-	fmt.Println(userID)
 
 	orders, err := h.orderRepo.GetOrdersByUserID(c.Request().Context(), userID)
 	if err != nil {

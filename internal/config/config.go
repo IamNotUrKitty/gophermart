@@ -51,7 +51,7 @@ type Config struct {
 func GetConfig() *Config {
 	var cfg Config
 	defaultAddress := "localhost:8080"
-	defaultDatabase := "postgres://postgres:123@localhost:5432/gophermart?sslmode=disable"
+	defaultDatabase := "postgres://postgres:postgres@localhost:5432/gophermart?sslmode=disable"
 	// defaultDatabase := ""
 
 	flag.Func("a", "Адрес запуска HTTP-сервера", parseAddress(&cfg.Address, defaultAddress))
