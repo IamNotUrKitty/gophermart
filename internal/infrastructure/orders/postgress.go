@@ -41,7 +41,7 @@ func (r *PostgressRepo) GetOrder(ctx context.Context, ord *order.Order) (*order.
 		return nil, err
 	}
 
-	return order.NewOrder(o.Number), nil
+	return &o, nil
 }
 
 func (r *PostgressRepo) GetOrdersByUserID(ctx context.Context, userID uuid.UUID) (*[]order.Order, error) {
