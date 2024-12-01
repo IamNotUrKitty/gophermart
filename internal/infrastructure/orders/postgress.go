@@ -45,7 +45,7 @@ func (r *PostgressRepo) GetOrder(ctx context.Context, ord *order.Order) (*order.
 }
 
 func (r *PostgressRepo) GetOrdersByUserID(ctx context.Context, userID uuid.UUID) (*[]order.Order, error) {
-	rows, err := r.db.Query(ctx, "SELECT number, status, accrual, uploaded_at FROM orders where user_id=$1", userID)
+	rows, err := r.db.Query(ctx, "SELECT number, status, user_id, accrual, uploaded_at FROM orders where user_id=$1", userID)
 	if err != nil {
 		return nil, err
 	}

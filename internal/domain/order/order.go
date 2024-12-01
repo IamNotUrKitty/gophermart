@@ -22,7 +22,7 @@ type Order struct {
 	Status     Status    `db:"status" json:"status"`
 	Accrual    *float64  `db:"accrual" json:"accrual,omitempty"`
 	UploadedAt time.Time `db:"uploaded_at" json:"uploaded_at"`
-	UserID     uuid.UUID
+	UserID     uuid.UUID `json:"-"`
 }
 
 func NewOrder(number string) *Order {
