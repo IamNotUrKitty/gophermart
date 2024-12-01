@@ -28,12 +28,16 @@ func (r *PostgressRepo) SaveOrder(ctx context.Context, o *order.Order, userID uu
 	return nil
 }
 
-func (r *PostgressRepo) GetOrder(ctx context.Context, number string) (*order.Order, error) {
-	userRow := r.db.QueryRow(ctx, "SELECT number, status, user_id, accrual, uploaded_at FROM orders where number=$1", number)
+func (r *PostgressRepo) GetOrder(ctx context.Context, ord *order.Order) (*order.Order, error) {
+	orderRow := r.db.QueryRow(ctx, "SELECT number, status, user_id, accrual, uploaded_at FROM orders where number=$1", ord.Number)
 
 	var o order.Order
 
-	if err := userRow.Scan(&o.Number, &o.Status, &o.Accrual, &o.UploadedAt); err != nil {
+	if err := orderRow.Scan(&o.Number, &o.Status, &o.UserID, &o.Accrual, &o.UploadedAt); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
+
 		return nil, err
 	}
 
